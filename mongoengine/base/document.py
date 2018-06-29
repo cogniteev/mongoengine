@@ -147,7 +147,7 @@ class BaseDocument(object):
 
             if not hasattr(self, name) and not name.startswith('_'):
                 DynamicField = _import_class('DynamicField')
-                field = DynamicField(db_field=name)
+                field = DynamicField(db_field=name, null=True)
                 field.name = name
                 self._dynamic_fields[name] = field
                 self._fields_ordered += (name,)
@@ -337,7 +337,7 @@ class BaseDocument(object):
                 value = field.generate()
                 self._data[field_name] = value
 
-            if value is not None:
+            if (value is not None) or (field.null):
                 if use_db_field:
                     data[field.db_field] = value
                 else:
@@ -1080,5 +1080,11 @@ class BaseDocument(object):
         """Return the display value for a choice field"""
         value = getattr(self, field.name)
         if field.choices and isinstance(field.choices[0], (list, tuple)):
-            return dict(field.choices).get(value, value)
+            if value is None:
+                return None
+            sep = getattr(field, 'display_sep', ' ')
+            values = value if field.__class__.__name__ in ('ListField', 'SortedListField') else [value]
+            return sep.join([
+                dict(field.choices).get(val, val)
+                for val in values or []])
         return value

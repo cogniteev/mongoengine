@@ -80,6 +80,7 @@ are as follows:
 * :class:`~mongoengine.fields.FloatField`
 * :class:`~mongoengine.fields.GenericEmbeddedDocumentField`
 * :class:`~mongoengine.fields.GenericReferenceField`
+* :class:`~mongoengine.fields.GenericLazyReferenceField`
 * :class:`~mongoengine.fields.GeoPointField`
 * :class:`~mongoengine.fields.ImageField`
 * :class:`~mongoengine.fields.IntField`
@@ -87,6 +88,7 @@ are as follows:
 * :class:`~mongoengine.fields.MapField`
 * :class:`~mongoengine.fields.ObjectIdField`
 * :class:`~mongoengine.fields.ReferenceField`
+* :class:`~mongoengine.fields.LazyReferenceField`
 * :class:`~mongoengine.fields.SequenceField`
 * :class:`~mongoengine.fields.SortedListField`
 * :class:`~mongoengine.fields.StringField`
@@ -526,8 +528,9 @@ There are a few top level defaults for all indexes that can be set::
         meta = {
             'index_options': {},
             'index_background': True,
+            'index_cls': False,
+            'auto_create_index': True,
             'index_drop_dups': True,
-            'index_cls': False
         }
 
 
@@ -539,6 +542,12 @@ There are a few top level defaults for all indexes that can be set::
 
 :attr:`index_cls` (Optional)
     A way to turn off a specific index for _cls.
+
+:attr:`auto_create_index` (Optional)
+    When this is True (default), MongoEngine will ensure that the correct
+    indexes exist in MongoDB each time a command is run. This can be disabled
+    in systems where indexes are managed separately. Disabling this will improve
+    performance.
 
 :attr:`index_drop_dups` (Optional)
     Set the default value for if an index should drop duplicates
